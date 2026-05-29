@@ -471,5 +471,3 @@ A parte do Felipe já está pronta e serve como base de integração.
 
 Os demais integrantes devem adaptar suas partes aos nomes e métodos esperados pelo menu, para que a união final seja simples e sem retrabalho.
 
-```
-```
