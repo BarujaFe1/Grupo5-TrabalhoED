@@ -1,6 +1,4 @@
-Segue um `README.md` geral pronto para copiar e colocar na raiz do projeto:
 
-````markdown
 # Simulador de Livro de Ofertas
 
 Projeto prático da disciplina **Estrutura de Dados em Python**.
