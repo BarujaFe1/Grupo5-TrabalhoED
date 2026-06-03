@@ -1,4 +1,4 @@
-# PARTE 4 - LIVRO DE OFERTAS E MOTOR DE MATCH - Victor
+# PARTE 4 - LIVRO DE OFERTAS E MOTOR DE MATCH - Responsável: Victor
 
 class Order:
     #Classe para a ordem de negociação
@@ -176,3 +176,103 @@ class OrderBook:
             print("  Nenhuma transação efetuada até o momento.")
         for t in self.transacoes:
             print(f"  {t}")
+
+
+class ListaDuplamenteEncadeada:
+    # é o orderbook real
+    def __init__(self, tipo_lista):
+        self.head = None
+        self.tail = None
+        self.tipo_lista = tipo_lista
+
+    def vazia(self):
+        return self.head is None
+
+    def obter_topo(self):
+        return self.head.order if self.head else None
+
+    def remover_topo(self):
+        if self.vazia():
+            return
+        self.head = self.head.next
+        if self.head:
+            self.head.prev = None
+        else:
+            self.tail = None
+
+    def inserir_ordenado(self, order):
+        #Insere a ordem na posição exata quando ela não encontra um par imediato
+        novo_no = Node(order)
+        if self.vazia():
+            self.head = self.tail = novo_no
+            return
+
+        atual = self.head
+        if self.tipo_lista == "compra":
+            while atual and atual.order.preco >= order.preco:
+                atual = atual.next
+        else:
+            while atual and atual.order.preco <= order.preco:
+                atual = atual.next
+
+        if atual == self.head:
+            novo_no.next = self.head
+            self.head.prev = novo_no
+            self.head = novo_no
+        elif atual is None:
+            self.tail.next = novo_no
+            novo_no.prev = self.tail
+            self.tail = novo_no
+        else:
+            novo_no.next = atual
+            novo_no.prev = atual.prev
+            atual.prev.next = novo_no
+            atual.prev = novo_no
+
+    def exibir(self):
+        if self.vazia():
+            print("Vazio")
+            return
+        atual = self.head
+        while atual:
+            print(f"  {atual.order}")
+            atual = atual.next
+
+
+class Pilha:
+    # Guarda os IDs na posição que foram inseridos,
+    # permitindo desfazer a última operação
+    def __init__(self):
+        self.topo = None
+
+    def empilhar(self, id_ordem):
+        novo_no = Node(id_ordem)
+        if self.topo:
+            novo_no.next = self.topo
+        self.topo = novo_no
+
+
+class Transacao:
+    #Funciona como um recbo da transação
+    def __init__(self, id_compra, id_venda, preco, quantidade):
+        self.id_compra = id_compra
+        self.id_venda = id_venda
+        self.preco = preco
+        self.quantidade = quantidade
+
+    def __str__(self):
+        return f"TRATO FEITO! Compra #{self.id_compra} casou com Venda #{self.id_venda} | Qtd: {self.quantidade} | Preço: R$ {self.preco:.2f}"
+
+
+if __name__ == "__main__":
+    livro = OrderBook()
+    livro.adicionar_ordem(Order(id=1, tipo="compra", preco=45.50, quantidade=10))
+    livro.adicionar_ordem(Order(id=2, tipo="compra", preco=47.00, quantidade=5))
+    livro.adicionar_ordem(Order(id=3, tipo="venda", preco=52.00, quantidade=10))
+    livro.processar_todas()
+    livro.exibir_livros()
+    livro.adicionar_ordem(Order(id=4, tipo="venda", preco=46.00, quantidade=12))
+    livro.processar_todas()
+    livro.exibir_livros()
+    livro.exibir_transacoes()
+
