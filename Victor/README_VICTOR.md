@@ -1,28 +1,27 @@
-# Livro de Ofertas e Motor de Match 
+# Parte 4 - Livro de Ofertas e Motor de Match (Responsável: Victor)
 
-O sistema é capaz de receber ordens de compra e venda através de uma fila de processamento, organizar essas ordens em livros de ofertas e realizar o casamento de preços (match) automaticamente quando as condições de mercado são atendidas.
+Esta seção do sistema funciona como o núcleo lógico do simulador, sendo estruturada através da classe `OrderBook`. Ela atua como o gerenciador ciclo de vida das ordens de negociação, controlando os livros de ofertas e executando o cruzamento de preços (Motor de Match).
 
-Toda a lógica foi desenvolvida utilizando **estruturas de dados puras e de encadeamento manual**, sem o uso de listas nativas ou métodos prontos do Python para a ordenação e armazenamento interno.
+## Arquitetura e Estruturas Gerenciadas
 
-##  Funcionalidades
+A classe `OrderBook` integra e manipula as seguintes estruturas lineares desenvolvidas pelo grupo:
 
-- **Fila de Entrada (FIFO):** Centraliza o recebimento de ordens e garante que elas sejam processadas na ordem exata de chegada.
-- **Livro de Ofertas Ordenado:** - As ordens de **Compra** são organizadas em ordem **decrescente** de preço.
-  - As ordens de **Venda** são organizadas em ordem **crescente** de preço.
-- **Motor de Match:** Executa o cruzamento de ordens sempre que o preço de uma ordem de compra é maior ou igual ao preço de uma ordem de venda.
-- **Histórico de Negociações:** Registra formalmente cada transação realizada, documentando as partes envolvidas, quantidade e preço final, como se fosse uma nota fiscal.
+* **Fila de Entrada (`self.fila_entrada`):** Instância de `Queue` usada para recepção das ordens criadas pelo sistema.
+* **Livro de Compras (`self.compras`):** Instância de `ListaDuplamenteEncadeada` que mantém as ofertas de compra ativas, ordenadas de forma **decrescente** por preço.
+* **Livro de Vendas (`self.vendas`):** Instância de `ListaDuplamenteEncadeada` que mantém as ofertas de venda ativas, ordenadas de forma **crescente** por preço.
+* **Pilha de Desfazer (`self.pilha_undo`):** Instância de `Pilha` que registra exclusivamente os (`id`) das ordens que alteraram o estado dos livros, servindo de base para o mecanismo de (*undo*).
+* **Histórico (`self.transacoes`):** Coleção encarregada de armazenar as transações executadas (`Transacao`) resultantes dos casamentos efetuados.
 
-##  Estruturas de Dados Utilizadas
+---
 
-Para atender aos requisitos de manipulação manual de memória e ponteiros, foram implementadas as seguintes estruturas:
+##  Funcionalidades e Fluxo de Métodos
 
-1. `Node`: Classe base que carrega a ordem (`Order`) e mantém referências para os nós vizinhos (`next` e `prev`).
-2. `Queue` (Fila): Controla o fluxo de entrada das ordens sob a regra *First-In, First-Out*.
-3. `ListaDuplamenteEncadeada`: Responsável pelo armazenamento dinâmico das ordens no livro. Realiza buscas sequenciais na memória para realizar a inserção ordenada dos nós.
-4. `Pilha`: Armazena os identificadores das ordens de forma encadeada sob a regra *Last-In, First-Out* para controle de operações de desfazer.
+### 1. Recepção de Ordens
+* **`adicionar_ordem(order)`**: Consolida a entrada da ordem de negociação no sistema, inserindo diretamente no fim da fila de processamento (`self.fila_entrada`).
 
-##  Agrupamentos Principais
+### 2. Controle de Fluxo
+* **`processar_proxima()`**: Remove o elemento mais antigo da fila de entrada (garantindo o comportamento FIFO) e o submete ao Motor de Match. 
+* **`processar_todas()`**: Executa um laço de repetição condicional invocando `processar_proxima()` de forma contínua até que o fluxo pendente seja totalmente esgotado.
 
-- `Order`: Modela a ordem de negociação contendo ID, tipo (`compra` ou `venda`), preço e quantidade de ativos.
-- `Transacao`: Funciona como o recibo/comprovante gerado logo após um casamento de ordens bem-sucedido.
-- `OrderBook`: O coração do sistema, responsável por coordenar a fila de entrada, invocar o motor de casamento (`casar_ordem`) e gerenciar os livros.
+### 3. O Motor de Match (`casar_ordem`)
+O método `casar_ordem(ordem_atual)` implementa o algoritmo de precificação e cruzamento com base na regra de mercado: **Preço de Compra $\ge$ Preço de Venda**.
