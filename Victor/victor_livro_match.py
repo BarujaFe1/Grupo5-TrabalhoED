@@ -4,8 +4,8 @@ class OrderBook:
     def __init__(self):
         # Inicializa a fila de entrada e os livros usando encadeamento manual
         self.fila_entrada = Queue()
-        self.compras = ListaDuplamenteEncadeada(tipo_lista="compra") # ordenado decrescente
-        self.vendas = ListaDuplamenteEncadeada(tipo_lista="venda")   # ordenado crescente
+        self.compras = DoublyLinkedList(tipo_lista="compra") # ordenado decrescente
+        self.vendas = DoublyLinkedList(tipo_lista="venda")   # ordenado crescente
         self.pilha_undo = Pilha()
         self.transacoes = []
 
