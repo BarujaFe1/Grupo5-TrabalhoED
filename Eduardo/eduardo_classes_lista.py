@@ -201,3 +201,56 @@ class DoublyLinkedList:
             # Utiliza a formatação estruturada dos atributos do objeto Order
             print(f'ID:{ponteiro.data.id}, Tipo:{ponteiro.data.tipo}, Preço:{ponteiro.data.preco}, Quantidade:{ponteiro.data.quantidade}, Tempo:{ponteiro.data.timestamp}')
             ponteiro = ponteiro.next 
+
+
+    #Funções adicionais necessárias para o OrderBook:
+    
+    def vazia(self) -> bool:
+        """
+        Verifica se a lista encadeada está vazia.
+        
+        Returns:
+            bool: True se a lista estiver vazia, False caso contrário.
+        """
+        return self.head is None
+
+    def obter_topo(self):
+        """
+        Retorna a ordem no topo da lista (o melhor preço) sem removê-la.
+        
+        Este método opera em tempo constante O(1), permitindo que o Motor de Match 
+        verifique rapidamente os preços sem alterar a estrutura da lista.
+        
+        Returns:
+            Order/bool: Retorna o objeto Order no topo, ou False se a lista estiver vazia.
+        """
+        if self.head is None:
+            return False
+        
+        # Retorna apenas a carga útil (Order), blindando o Node interno
+        return self.head.data
+
+    def remover_topo(self):
+        """
+        Remove a ordem no topo da lista (o primeiro elemento).
+        
+        Utilizado pelo Motor de Match após uma transação ser concluída com sucesso.
+        A operação é realizada em tempo constante O(1) através do religamento do head.
+        
+        Returns:
+            bool: True se o topo foi removido com sucesso, False se a lista estava vazia.
+        """
+        if self.head is None:
+            return False
+        
+        # Cenário 1: Se for o único nó da lista
+        if self.head == self.tail:
+            self.head = None
+            self.tail = None
+            return True
+            
+        # Cenário 2: Se a lista tiver mais de um elemento
+        self.head = self.head.next
+        self.head.prev = None
+        
+        return True
