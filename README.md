@@ -27,6 +27,8 @@ collections.deque
 
 A ideia é demonstrar o funcionamento das estruturas por meio de nós, referências e ponteiros lógicos.
 
+O projeto está completo. Os arquivos finais estão em `final/simulador_livro_ofertas.py`, `notebook/performance_tests.ipynb` e `final/link_github.txt`.
+
 ## Entregas obrigatórias do trabalho
 
 Além do arquivo final `.py`, o grupo também deverá entregar:
@@ -569,21 +571,49 @@ A parte do Victor ficará antes do menu, porque o menu depende da classe `OrderB
 
 A parte do Eduardo, Fernando e Nicolas ficará antes do `OrderBook`, porque o `OrderBook` depende dessas classes.
 
-## Estrutura final para entrega
+## Estrutura final do repositório
 
-A entrega final compactada deve ficar assim:
+```text
+Grupo5-TrabalhoED/
+│
+├── README.md
+├── LICENSE
+├── Relatorio 0.2.pdf
+│
+├── Eduardo/
+│   └── eduardo_classes_lista.py
+│
+├── Felipe/
+│   ├── felipe_menu.py
+│   └── README_FELIPE.md
+│
+├── Nicolas/
+│   ├── nicolas_transacoes.py
+│   └── README_NICOLAS.MD
+│
+├── Victor/
+│   ├── victor_livro_match.py
+│   └── README_VICTOR.md
+│
+├── final/
+│   ├── simulador_livro_ofertas.py   ← Arquivo principal integrado
+│   └── link_github.txt              ← Link do repositório
+│
+└── notebook/
+    └── performance_tests.ipynb      ← Notebook de performance
+```
+
+### Arquivos finais para entrega compactada
 
 ```text
 trabalho_livro_ofertas.zip
 │
-├── simulador_livro_ofertas.py
-├── performance_tests.ipynb
+├── final/simulador_livro_ofertas.py
+├── notebook/performance_tests.ipynb
 ├── README.md
-├── relatorio.pdf
-└── link_github.txt
+├── Relatorio 0.2.pdf
+└── final/link_github.txt
 ```
-
-Também podemos manter as pastas individuais no repositório, mas a entrega final deve deixar bem claro quais são os arquivos finais.
 
 ## Defesa oral
 
