@@ -6,9 +6,6 @@
 # Arquivo único do projeto.
 # PARTE 5 pronta: Menu principal e execução do simulador.
 # Responsável: Felipe
-#
-# As demais partes estão como placeholders temporários.
-# Cada colega deverá substituir a própria seção pela implementação final.
 # ==================================================
 
 from datetime import datetime
@@ -45,18 +42,138 @@ class Order:
 
 class Node:
     """
-    Placeholder temporário.
-    Eduardo substituirá esta classe pela implementação completa do nó.
+    Nó da Lista Duplamente Encadeada.
+    Encapsula o objeto Order e mantém os ponteiros next e prev.
     """
-    pass
+    def __init__(self, data):
+        self.data = data
+        self.prev = None
+        self.next = None
 
 
 class DoublyLinkedList:
     """
-    Placeholder temporário.
-    Eduardo substituirá esta classe pela lista duplamente encadeada completa.
+    Lista Duplamente Encadeada com inserção ordenada.
+
+    Compras ('C'): ordem decrescente de preço.
+    Vendas ('V'): ordem crescente de preço.
+    Preços iguais respeitam ordem de chegada (FIFO).
     """
-    pass
+    def __init__(self):
+        self.head = None
+        self.tail = None
+
+    def insercao_ordenada(self, ordem):
+        no = Node(ordem)
+
+        if self.head is None:
+            self.head = no
+            self.tail = no
+            return
+
+        if no.data.tipo == 'C':
+            if no.data.preco > self.head.data.preco:
+                self.head.prev = no
+                no.next = self.head
+                self.head = no
+                return
+
+            ponteiro = self.head
+            while ponteiro:
+                if no.data.preco > ponteiro.data.preco:
+                    no.next = ponteiro
+                    no.prev = ponteiro.prev
+                    ponteiro.prev.next = no
+                    ponteiro.prev = no
+                    return
+                ponteiro = ponteiro.next
+
+            no.prev = self.tail
+            self.tail.next = no
+            self.tail = no
+
+        else:
+            if no.data.preco < self.head.data.preco:
+                self.head.prev = no
+                no.next = self.head
+                self.head = no
+                return
+
+            ponteiro = self.head
+            while ponteiro:
+                if no.data.preco < ponteiro.data.preco:
+                    no.next = ponteiro
+                    no.prev = ponteiro.prev
+                    ponteiro.prev.next = no
+                    ponteiro.prev = no
+                    return
+                ponteiro = ponteiro.next
+
+            no.prev = self.tail
+            self.tail.next = no
+            self.tail = no
+
+    def remover(self, ordem):
+        if self.head is None:
+            return
+
+        ponteiro = self.head
+        while ponteiro:
+            if ponteiro.data.id == ordem.id:
+                if ponteiro == self.head and ponteiro == self.tail:
+                    self.head = None
+                    self.tail = None
+                elif ponteiro == self.head:
+                    self.head = ponteiro.next
+                    self.head.prev = None
+                elif ponteiro == self.tail:
+                    self.tail = ponteiro.prev
+                    self.tail.next = None
+                else:
+                    ponteiro.prev.next = ponteiro.next
+                    ponteiro.next.prev = ponteiro.prev
+                return True
+            ponteiro = ponteiro.next
+        return False
+
+    def busca(self, id_ordem):
+        if self.head is None:
+            return False
+        ponteiro = self.head
+        while ponteiro:
+            if ponteiro.data.id == id_ordem:
+                return ponteiro.data
+            ponteiro = ponteiro.next
+        return False
+
+    def exibir(self):
+        if self.head is None:
+            print('  Lista Vazia')
+            return
+        ponteiro = self.head
+        while ponteiro:
+            print(f'  ID:{ponteiro.data.id}, Tipo:{ponteiro.data.tipo}, '
+                  f'Preço:{ponteiro.data.preco}, Quantidade:{ponteiro.data.quantidade}, '
+                  f'Tempo:{ponteiro.data.timestamp}')
+            ponteiro = ponteiro.next
+
+    def vazia(self):
+        return self.head is None
+
+    def obter_topo(self):
+        if self.head is None:
+            return None
+        return self.head.data
+
+    def remover_topo(self):
+        if self.head is None:
+            return
+        if self.head == self.tail:
+            self.head = None
+            self.tail = None
+        else:
+            self.head = self.head.next
+            self.head.prev = None
 
 
 # ==================================================
@@ -65,20 +182,89 @@ class DoublyLinkedList:
 # Commit: feat: implementa fila encadeada e pilha de undo
 # ==================================================
 
+class _QueueNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+
 class Queue:
     """
-    Placeholder temporário.
-    Fernando substituirá esta classe pela fila encadeada completa.
+    Fila (FIFO) implementada manualmente com nós encadeados.
+    Operações de extremidade em O(1).
     """
-    pass
+    def __init__(self):
+        self._front = None
+        self._rear = None
+
+    def enqueue(self, data):
+        node = _QueueNode(data)
+        if self._rear is None:
+            self._front = node
+            self._rear = node
+        else:
+            self._rear.next = node
+            self._rear = node
+
+    def dequeue(self):
+        if self._front is None:
+            return None
+        data = self._front.data
+        self._front = self._front.next
+        if self._front is None:
+            self._rear = None
+        return data
+
+    def peek(self):
+        if self._front is None:
+            return None
+        return self._front.data
+
+    def is_empty(self):
+        return self._front is None
+
+    inserir = enqueue
+    remover = dequeue
+    vazio = is_empty
+
+
+class _StackNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
 
 
 class Stack:
     """
-    Placeholder temporário.
-    Fernando substituirá esta classe pela pilha encadeada completa.
+    Pilha (LIFO) implementada manualmente com nós encadeados.
+    Operações de extremidade em O(1).
     """
-    pass
+    def __init__(self):
+        self._top = None
+
+    def push(self, data):
+        node = _StackNode(data)
+        node.next = self._top
+        self._top = node
+
+    def pop(self):
+        if self._top is None:
+            return None
+        data = self._top.data
+        self._top = self._top.next
+        return data
+
+    def peek(self):
+        if self._top is None:
+            return None
+        return self._top.data
+
+    def is_empty(self):
+        return self._top is None
+
+    empilhar = push
+    desempilhar = pop
+    vazio = is_empty
 
 
 # ==================================================
@@ -89,10 +275,67 @@ class Stack:
 
 class Transaction:
     """
-    Placeholder temporário.
-    Nicolas substituirá esta classe pela implementação completa das transações.
+    Representa uma transação entre uma ordem de compra e uma de venda.
+
+    Atributos:
+        id_compra (int): ID da ordem de compra.
+        id_venda (int): ID da ordem de venda.
+        preco (float): Preço de execução (preço de quem já estava no livro).
+        quantidade (int): Quantidade negociada.
+        timestamp (str): Momento da transação.
     """
-    pass
+    def __init__(self, id_compra, id_venda, preco, quantidade):
+        self.id_compra = id_compra
+        self.id_venda = id_venda
+        self.preco = float(preco)
+        self.quantidade = int(quantidade)
+        self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    def __str__(self):
+        return (
+            f"[{self.timestamp}] NEGÓCIO FECHADO | "
+            f"Compra #{self.id_compra} x Venda #{self.id_venda} | "
+            f"Qtd: {self.quantidade} | "
+            f"Preço: R$ {self.preco:.2f}"
+        )
+
+
+class _TransactionNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+
+class TransactionHistory:
+    """
+    Histórico de transações como lista encadeada simples.
+    Evita uso de list nativa para o armazenamento principal.
+    """
+    def __init__(self):
+        self._head = None
+
+    def add(self, transaction):
+        node = _TransactionNode(transaction)
+        node.next = self._head
+        self._head = node
+
+    def show(self):
+        if self._head is None:
+            print("  Nenhuma transação efetuada até o momento.")
+            return
+        current = self._head
+        while current:
+            print(f"  {current.data}")
+            current = current.next
+
+    def is_empty(self):
+        return self._head is None
+
+    def __iter__(self):
+        current = self._head
+        while current:
+            yield current.data
+            current = current.next
 
 
 # ==================================================
@@ -103,36 +346,108 @@ class Transaction:
 
 class OrderBook:
     """
-    Interface mínima temporária para o menu funcionar durante os testes.
+    Livro de Ofertas com motor de casamento (match).
 
-    Victor deverá substituir esta classe pelo livro de ofertas completo,
-    integrando fila, pilha, listas encadeadas, transações e motor de match.
+    Integra fila de entrada (Queue), listas de compra/venda (DoublyLinkedList),
+    pilha de undo (Stack) e histórico de transações (TransactionHistory).
     """
     def __init__(self):
-        self.total_ordens_recebidas = 0
+        self.fila_entrada = Queue()
+        self.compras = DoublyLinkedList()
+        self.vendas = DoublyLinkedList()
+        self.pilha_undo = Stack()
+        self.transacoes = TransactionHistory()
 
     def add_order(self, order):
-        self.total_ordens_recebidas += 1
-        print("\nOrdem recebida e enviada para a fila de entrada.")
-        print(order)
+        self.fila_entrada.enqueue(order)
+        print(f"\nOrdem {order.id} ({order.tipo.upper()}) recebida e adicionada à fila.")
 
     def process_next_order(self):
-        print("\n[AVISO] process_next_order será implementado por Victor.")
+        if self.fila_entrada.is_empty():
+            print("\nFila de entrada vazia. Nenhuma ordem para processar.")
+            return False
+        ordem = self.fila_entrada.dequeue()
+        print(f"\nProcessando ordem {ordem.id}...")
+        self.match_order(ordem)
+        return True
 
     def process_all_orders(self):
-        print("\n[AVISO] process_all_orders será implementado por Victor.")
+        while self.process_next_order():
+            pass
+
+    def match_order(self, ordem_atual):
+        tipo = ordem_atual.tipo.strip().upper()
+
+        if tipo == 'C':
+            while ordem_atual.quantidade > 0 and not self.vendas.vazia():
+                melhor_venda = self.vendas.obter_topo()
+                if ordem_atual.preco >= melhor_venda.preco:
+                    qtd = min(ordem_atual.quantidade, melhor_venda.quantidade)
+                    transacao = Transaction(
+                        id_compra=ordem_atual.id,
+                        id_venda=melhor_venda.id,
+                        preco=melhor_venda.preco,
+                        quantidade=qtd
+                    )
+                    self.transacoes.add(transacao)
+                    print(f"NEGÓCIO FECHADO! {qtd} un. negociadas a R$ {melhor_venda.preco:.2f}")
+                    ordem_atual.quantidade -= qtd
+                    melhor_venda.quantidade -= qtd
+                    if melhor_venda.quantidade == 0:
+                        self.vendas.remover_topo()
+                else:
+                    break
+            if ordem_atual.quantidade > 0:
+                self.compras.insercao_ordenada(ordem_atual)
+                self.pilha_undo.push(ordem_atual.id)
+
+        elif tipo == 'V':
+            while ordem_atual.quantidade > 0 and not self.compras.vazia():
+                melhor_compra = self.compras.obter_topo()
+                if melhor_compra.preco >= ordem_atual.preco:
+                    qtd = min(melhor_compra.quantidade, ordem_atual.quantidade)
+                    transacao = Transaction(
+                        id_compra=melhor_compra.id,
+                        id_venda=ordem_atual.id,
+                        preco=melhor_compra.preco,
+                        quantidade=qtd
+                    )
+                    self.transacoes.add(transacao)
+                    print(f"NEGÓCIO FECHADO! {qtd} un. negociadas a R$ {melhor_compra.preco:.2f}")
+                    ordem_atual.quantidade -= qtd
+                    melhor_compra.quantidade -= qtd
+                    if melhor_compra.quantidade == 0:
+                        self.compras.remover_topo()
+                else:
+                    break
+            if ordem_atual.quantidade > 0:
+                self.vendas.insercao_ordenada(ordem_atual)
+                self.pilha_undo.push(ordem_atual.id)
 
     def show_buy_orders(self):
-        print("\n[AVISO] show_buy_orders será implementado por Victor.")
+        print("\n <<<< LIVRO DE COMPRAS (Preços Decrescentes) >>>>")
+        self.compras.exibir()
 
     def show_sell_orders(self):
-        print("\n[AVISO] show_sell_orders será implementado por Victor.")
+        print("\n <<<< LIVRO DE VENDAS (Preços Crescentes) >>>>")
+        self.vendas.exibir()
 
     def show_transactions(self):
-        print("\n[AVISO] show_transactions será implementado por Victor.")
+        print("\n<<<< HISTÓRICO DE NEGOCIAÇÕES >>>>")
+        self.transacoes.show()
 
     def undo_last_order(self):
-        print("\n[AVISO] undo_last_order será implementado por Victor.")
+        if self.pilha_undo.is_empty():
+            print("\nNenhuma ordem para desfazer.")
+            return
+        id_ordem = self.pilha_undo.pop()
+        removido = self.compras.remover(Order(id_ordem, '', 0, 0, ''))
+        if not removido:
+            removido = self.vendas.remover(Order(id_ordem, '', 0, 0, ''))
+        if removido:
+            print(f"\nOrdem ID {id_ordem} desfeita e removida do livro.")
+        else:
+            print(f"\nOrdem ID {id_ordem} não encontrada no livro para desfazer.")
 
 
 # ==================================================
@@ -142,101 +457,54 @@ class OrderBook:
 # ==================================================
 
 def gerar_timestamp():
-    """
-    Gera o timestamp da ordem no momento do cadastro.
-
-    Complexidade: O(1).
-    """
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def ler_inteiro(mensagem, valor_minimo=None):
-    """
-    Lê um número inteiro com validação.
-
-    Usado para ID e quantidade da ordem.
-    """
     while True:
         try:
             valor = int(input(mensagem))
-
             if valor_minimo is not None and valor < valor_minimo:
                 print(f"Valor inválido. Informe um número maior ou igual a {valor_minimo}.")
                 continue
-
             return valor
-
         except ValueError:
             print("Entrada inválida. Digite um número inteiro.")
 
 
 def ler_float(mensagem, valor_minimo=None):
-    """
-    Lê um número decimal com validação.
-
-    Aceita vírgula ou ponto como separador decimal.
-    """
     while True:
         try:
             entrada = input(mensagem).strip().replace(",", ".")
             valor = float(entrada)
-
             if valor_minimo is not None and valor < valor_minimo:
                 print(f"Valor inválido. Informe um número maior ou igual a {valor_minimo}.")
                 continue
-
             return valor
-
         except ValueError:
             print("Entrada inválida. Digite um número válido. Exemplo: 25.50")
 
 
 def ler_tipo_ordem():
-    """
-    Lê e valida o tipo da ordem.
-
-    C = Compra
-    V = Venda
-    """
     while True:
         tipo = input("Tipo da ordem [C = Compra | V = Venda]: ").strip().upper()
-
         if tipo in ("C", "V"):
             return tipo
-
         print("Tipo inválido. Digite apenas C para compra ou V para venda.")
 
 
 def ler_ordem(tipo=None):
-    """
-    Lê os dados de uma nova ordem pelo terminal.
-
-    Se o tipo já vier informado pelo menu, não pergunta novamente.
-    """
     print("\n--- Cadastro de nova ordem ---")
-
     id_ordem = ler_inteiro("ID da ordem: ", valor_minimo=1)
-
     if tipo is None:
         tipo = ler_tipo_ordem()
-
     preco = ler_float("Preço unitário: R$ ", valor_minimo=0.01)
     quantidade = ler_inteiro("Quantidade: ", valor_minimo=1)
     timestamp = gerar_timestamp()
-
-    return Order(
-        id=id_ordem,
-        tipo=tipo,
-        preco=preco,
-        quantidade=quantidade,
-        timestamp=timestamp
-    )
+    return Order(id=id_ordem, tipo=tipo, preco=preco, quantidade=quantidade, timestamp=timestamp)
 
 
 def exibir_cabecalho():
-    """
-    Exibe o cabeçalho do sistema.
-    """
     print("\n" + "=" * 54)
     print("SIMULADOR DE LIVRO DE OFERTAS")
     print("Estrutura de Dados em Python")
@@ -244,12 +512,6 @@ def exibir_cabecalho():
 
 
 def exibir_menu():
-    """
-    Exibe as opções principais do simulador.
-
-    O menu é a interface de teste pelo terminal.
-    Cada opção chama um método específico do livro de ofertas.
-    """
     print("\nEscolha uma opção:")
     print("1 - Inserir ordem de compra")
     print("2 - Inserir ordem de venda")
@@ -263,53 +525,34 @@ def exibir_menu():
 
 
 def menu():
-    """
-    Controla o fluxo principal do sistema.
-
-    Responsabilidades:
-    - Receber comandos do usuário.
-    - Ler os dados de novas ordens.
-    - Chamar os métodos correspondentes do OrderBook.
-    - Manter o programa em execução até a opção sair.
-    """
     livro = OrderBook()
 
     while True:
         exibir_cabecalho()
         exibir_menu()
-
         opcao = input("\nOpção: ").strip()
 
         if opcao == "1":
             ordem = ler_ordem(tipo="C")
             livro.add_order(ordem)
-
         elif opcao == "2":
             ordem = ler_ordem(tipo="V")
             livro.add_order(ordem)
-
         elif opcao == "3":
             livro.process_next_order()
-
         elif opcao == "4":
             livro.process_all_orders()
-
         elif opcao == "5":
             livro.show_buy_orders()
-
         elif opcao == "6":
             livro.show_sell_orders()
-
         elif opcao == "7":
             livro.show_transactions()
-
         elif opcao == "8":
             livro.undo_last_order()
-
         elif opcao == "0":
             print("\nSistema encerrado.")
             break
-
         else:
             print("\nOpção inválida. Escolha uma opção do menu.")
 
@@ -317,9 +560,6 @@ def menu():
 
 
 def main():
-    """
-    Função principal do simulador.
-    """
     menu()
 
 
