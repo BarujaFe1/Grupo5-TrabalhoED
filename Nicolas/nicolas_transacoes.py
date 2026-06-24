@@ -70,3 +70,103 @@ class Transaction:
             f"Qtd: {self.quantidade} | "
             f"Preço: R$ {self.preco:.2f}"
         )
+
+
+class NodeTransaction:
+    """
+    Nó interno da lista encadeada usada pelo TransactionHistory.
+
+    Encapsula um objeto Transaction e mantém o ponteiro para o próximo nó,
+    permitindo o encadeamento manual sem uso de estruturas nativas.
+
+    Atributos:
+        data (Transaction): A transação armazenada neste nó.
+        next (NodeTransaction | None): Ponteiro para o próximo nó da cadeia.
+    """
+
+    def __init__(self, data: Transaction):
+        """
+        Inicializa o nó com a transação fornecida e ponteiro nulo.
+
+        Complexidade: O(1).
+        """
+        self.data = data
+        self.next = None
+
+
+class TransactionHistory:
+    """
+    Histórico de transações implementado como lista encadeada simples.
+
+    Armazena de forma ordenada (cronológica) todas as transações geradas
+    pelo motor de match, sem utilizar listas nativas do Python.
+
+    A inserção é feita sempre no final da cadeia (append), preservando
+    a ordem de chegada. A exibição percorre a cadeia do início ao fim.
+
+    Atributos:
+        head (NodeTransaction | None): Primeiro nó da cadeia (transação mais antiga).
+        tail (NodeTransaction | None): Último nó da cadeia (transação mais recente).
+    """
+
+    def __init__(self):
+        """
+        Inicializa o histórico vazio.
+
+        Complexidade: O(1).
+        """
+        self.head = None
+        self.tail = None
+
+    def add(self, transaction: Transaction):
+        """
+        Insere uma nova transação no final do histórico.
+
+        Preserva a ordem cronológica: a transação mais antiga fica no início
+        da cadeia e a mais recente sempre no final.
+
+        Args:
+            transaction (Transaction): O objeto da transação a ser registrada.
+
+        Complexidade: O(1).
+        """
+        no = NodeTransaction(transaction)
+
+        # Caso Base: histórico vazio
+        if self.head is None:
+            self.head = no
+            self.tail = no
+            return
+
+        # Caso Geral: encadeia ao final
+        self.tail.next = no
+        self.tail = no
+
+    def is_empty(self):
+        """
+        Verifica se o histórico está vazio.
+
+        Returns:
+            bool: True se não houver nenhuma transação registrada, False caso contrário.
+
+        Complexidade: O(1).
+        """
+        return self.head is None
+
+    def show(self):
+        """
+        Percorre o histórico e exibe todas as transações no terminal.
+
+        Utiliza o __str__ de cada Transaction para formatar a saída.
+        Se o histórico estiver vazio, exibe uma mensagem informativa.
+
+        Complexidade: O(n), onde n é o número de transações registradas.
+        """
+        if self.is_empty():
+            print("  Nenhuma transação efetuada até o momento.")
+            return
+
+        ponteiro = self.head
+        while ponteiro:
+            print(f"  {ponteiro.data}")
+            ponteiro = ponteiro.next
