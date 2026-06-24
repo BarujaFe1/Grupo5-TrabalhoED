@@ -52,7 +52,7 @@ class DoublyLinkedList:
         self.head = None
         self.tail = None
 
-    def insercao_ordenada(self, ordem:Order):
+    def insert_ordered(self, ordem:Order):
         """
         Insere uma nova ordem na lista com complexidade O(n).
         
@@ -128,9 +128,9 @@ class DoublyLinkedList:
             self.tail.next = no
             self.tail = no
 
-    def remover(self, ordem:Order):
+    def remove_by_id(self, id_ordem: int):
         """
-        Busca e remove uma ordem específica com base no seu ID.
+        Busca e remove uma ordem específica com base no seu ID (usado pelo sistema de Undo.
         
         Args:
             ordem (Order): Objeto contendo o ID alvo para cancelamento.
@@ -144,7 +144,7 @@ class DoublyLinkedList:
         ponteiro = self.head
         while ponteiro:
             # A busca linear (O(n)) é feita comparando o ID único
-            if ponteiro.data.id == ordem.id:
+            if ponteiro.data.id == id_ordem:
 
                 # Cenário 1: Único elemento da lista
                 if ponteiro == self.head and ponteiro == self.tail:
@@ -190,7 +190,7 @@ class DoublyLinkedList:
             ponteiro = ponteiro.next
         return False
 
-    def exibir(self):
+    def display(self):
         """Percorre a lista O(n) exibindo os dados de cada nó formatados no terminal."""
         if self.head == None:
             print('Lista Vazia')
@@ -205,7 +205,7 @@ class DoublyLinkedList:
 
     #Funções adicionais necessárias para o OrderBook:
     
-    def vazia(self) -> bool:
+    def is_empty(self):
         """
         Verifica se a lista encadeada está vazia.
         
