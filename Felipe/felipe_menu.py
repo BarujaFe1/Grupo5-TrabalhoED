@@ -29,7 +29,7 @@ class Order:
         self.id = id
         self.tipo = tipo
         self.preco = preco
-        self.quantidade = quantidade
+        self.quantidade = quantity if 'quantity' in locals() else quantidade # use standard parameter
         self.timestamp = timestamp
 
     def __str__(self):
@@ -275,119 +275,90 @@ class DoublyLinkedList:
 
 
 # ==================================================
-# PARTE 2 - FILA ENCADEADA E PILHA DE UNDO
+# PARTE 2 - FILA E PILHA
 # Responsável: Fernando Lacerda Dantas – RA: 17097341
 # ==================================================
 
-class _QueueNode:
-    """Nó interno para a fila encadeada."""
-    __slots__ = ('data', 'next')
-
-    def __init__(self, data):
-        self.data = data
-        self.next = None
+class No:
+    def __init__(self, dado):
+        self.dado = dado
+        self.proximo = None
 
 
 class Queue:
-    """
-    Fila (FIFO) implementada manualmente com nós encadeados.
-
-    Operações de extremidade em O(1):
-    - enqueue: insere no final.
-    - dequeue: remove do início.
-    - peek: consulta o início sem remover.
-    - is_empty: verifica se a fila está vazia.
-    """
-
     def __init__(self):
-        self._front = None
-        self._rear = None
+        self.inicio = None
+        self.fim = None
 
-    def enqueue(self, data):
-        """Insere um elemento no final da fila. Complexidade: O(1)."""
-        node = _QueueNode(data)
-        if self._rear is None:
-            self._front = node
-            self._rear = node
-        else:
-            self._rear.next = node
-            self._rear = node
+    def enqueue(self, dado):
+        novo = No(dado)
+        if self.fim is not None:
+            self.fim.proximo = novo
+        self.fim = novo
+        if self.inicio is None:
+            self.inicio = novo
 
     def dequeue(self):
-        """Remove e retorna o elemento do início da fila. Complexidade: O(1)."""
-        if self._front is None:
+        if self.is_empty():
             return None
-        data = self._front.data
-        self._front = self._front.next
-        if self._front is None:
-            self._rear = None
-        return data
+        dado = self.inicio.dado
+        self.inicio = self.inicio.proximo
+        if self.inicio is None:
+            self.fim = None
+        return dado
 
     def peek(self):
-        """Retorna o elemento do início sem remover. Complexidade: O(1)."""
-        if self._front is None:
+        if self.is_empty():
             return None
-        return self._front.data
+        return self.inicio.dado
 
     def is_empty(self):
-        """Verifica se a fila está vazia. Complexidade: O(1)."""
-        return self._front is None
+        return self.inicio is None
 
-    inserir = enqueue
-    remover = dequeue
-    vazio = is_empty
+    # Aliases em português
+    def inserir(self, dado):
+        return self.enqueue(dado)
 
+    def remover(self):
+        return self.dequeue()
 
-class _StackNode:
-    """Nó interno para a pilha encadeada."""
-    __slots__ = ('data', 'next')
-
-    def __init__(self, data):
-        self.data = data
-        self.next = None
+    def vazio(self):
+        return self.is_empty()
 
 
 class Stack:
-    """
-    Pilha (LIFO) implementada manualmente com nós encadeados.
-
-    Operações de extremidade em O(1):
-    - push: insere no topo.
-    - pop: remove do topo.
-    - peek: consulta o topo sem remover.
-    - is_empty: verifica se a pilha está vazia.
-    """
-
     def __init__(self):
-        self._top = None
+        self.topo = None
 
-    def push(self, data):
-        """Insere um elemento no topo da pilha. Complexidade: O(1)."""
-        node = _StackNode(data)
-        node.next = self._top
-        self._top = node
+    def push(self, dado):
+        novo = No(dado)
+        novo.proximo = self.topo
+        self.topo = novo
 
     def pop(self):
-        """Remove e retorna o elemento do topo da pilha. Complexidade: O(1)."""
-        if self._top is None:
+        if self.is_empty():
             return None
-        data = self._top.data
-        self._top = self._top.next
-        return data
+        dado = self.topo.dado
+        self.topo = self.topo.proximo
+        return dado
 
     def peek(self):
-        """Retorna o elemento do topo sem remover. Complexidade: O(1)."""
-        if self._top is None:
+        if self.is_empty():
             return None
-        return self._top.data
+        return self.topo.dado
 
     def is_empty(self):
-        """Verifica se a pilha está vazia. Complexidade: O(1)."""
-        return self._top is None
+        return self.topo is None
 
-    empilhar = push
-    desempilhar = pop
-    vazio = is_empty
+    # Aliases em português
+    def empilhar(self, dado):
+        return self.push(dado)
+
+    def desempilhar(self):
+        return self.pop()
+
+    def vazio(self):
+        return self.is_empty()
 
 
 # ==================================================
@@ -535,7 +506,7 @@ class TransactionHistory:
 
     def show(self):
         """
-        Recorre o histórico e exibe todas as transações no terminal.
+        Percorre o histórico e exibe todas as transações no terminal.
 
         Utiliza o __str__ de cada Transaction para formatar a saída.
         Se o histórico estiver vazio, exibe uma mensagem informativa.
@@ -760,10 +731,10 @@ def mostrar_fila_entrada(livro):
     if livro.fila_entrada.is_empty():
         print("  Fila de entrada vazia.")
         return
-    ponteiro = livro.fila_entrada._front
+    ponteiro = livro.fila_entrada.inicio
     while ponteiro:
-        print(f"  {ponteiro.data}")
-        ponteiro = ponteiro.next
+        print(f"  {ponteiro.dado}")
+        ponteiro = ponteiro.proximo
 
 
 def exibir_menu():
